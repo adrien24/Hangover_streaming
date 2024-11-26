@@ -1,6 +1,7 @@
 import express, { Application } from 'express'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
+import cors from 'cors' // Importer le middleware CORS
 import sequelize from './config/db'
 import authRoutes from './routes/auth'
 
@@ -11,6 +12,14 @@ const PORT = process.env.PORT || 5050
 
 // Middleware
 app.use(bodyParser.json())
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Remplacez par l'origine de votre frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes autorisées
+    credentials: true, // Si vous utilisez des cookies
+  })
+)
 
 // Routes
 app.use('/api/auth', authRoutes)

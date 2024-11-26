@@ -49,10 +49,31 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Génération du token JWT
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-      expiresIn: '1h',
+      expiresIn: '7d',
     })
 
     res.status(200).json({ message: 'Login successful', token })
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message })
+  }
+}
+
+export const verifyToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1]
+    if (!token) {
+      res.status(401).json({ message: 'Unauthorized' })
+      return
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET as string, (error, decoded) => {
+      if (error) {
+        res.status(401).json({ message: 'Unauthorized' })
+        return
+      }
+
+      res.status(200).json({ message: 'Token is valid', decoded })
+    })
   } catch (error) {
     res.status(500).json({ error: (error as Error).message })
   }
